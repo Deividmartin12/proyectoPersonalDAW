@@ -32,6 +32,11 @@ def formulario_agregar_disco():
         return render_template("agregar_disco.html", esSesionIniciada=True)
     return render_template("login.html")
 
+#APIS
+
+#metodo por defecto es get
+#post cuando consuma esta api enviara la informacion en el cuerpo del reques
+#get-> envia en el enlace
 @app.route("/api_guardar_disco")
 def api_agregar_disco():
     token = request.cookies.get('token')
@@ -40,7 +45,19 @@ def api_agregar_disco():
     artista = request.json["artista"]
     precio = request.json["precio"]
     genero = request.json["genero"]
+    controlador_discos.insertar_disco(codigo, nombre, artista, precio, genero)
+    return jsonify({'Mensaje':'Registro Correcto', 'Codigo':'1'})
     
+@app.route("/api_actualizar_disco", methods=["POST"])
+def api_actualizar_disco():
+    id = request.json["id"]
+    codigo = request.json["codigo"]
+    nombre = request.json["nombre"]
+    artista = request.json["artista"]
+    precio = request.json["precio"]
+    genero = request.json["genero"]
+    controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
+    return jsonify({'Mensaje':'Registro actualizar', 'Codigo':'1'})
 
 
 @app.route("/guardar_disco", methods=["POST"])
