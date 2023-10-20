@@ -23,7 +23,7 @@ def pruebajsonreal():
     #pruebadict = dict()
     #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';    
     #pruebadict = ""
-    return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'});
+    return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'})
     
 @app.route("/agregar_disco")
 def formulario_agregar_disco():
