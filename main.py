@@ -28,7 +28,7 @@ def pruebajsonreal():
 @app.route("/agregar_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
-    if token == "abcdef":
+    if token == token:
         return render_template("agregar_disco.html", esSesionIniciada=True)
     return render_template("login.html")
 
