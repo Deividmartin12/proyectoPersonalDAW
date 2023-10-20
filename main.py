@@ -39,12 +39,13 @@ def formulario_agregar_disco():
 #post cuando consuma esta api enviara la informacion en el cuerpo del reques
 #get-> envia en el enlace
 @app.route("/api_obtener_discos")
-def api_obtner_dicos():
+def api_obtener_discos():
     lista_dics= []
-    discos=controlador_discos.obtener_discos
+    discos=controlador_discos.obtener_discos()
     for disco in discos:
         mi_obj_disco = clase_disco.Disco(disco[0],disco[1],disco[2],disco[3],disco[4],disco[5])
         lista_dics.append(mi_obj_disco.obtener_objeto_serializable())
+
     return jsonify(lista_dics)
 
 @app.route("/api_guardar_disco")
