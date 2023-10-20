@@ -16,7 +16,7 @@ def pruebajson():
     #pruebadict = dict()
     #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';
     pruebadict = "{'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'}"
-    return pruebadict;
+    return pruebadict
 
 @app.route("/pruebajsonreal")
 def pruebajsonreal():
@@ -28,7 +28,7 @@ def pruebajsonreal():
 @app.route("/agregar_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
-    if token == token:
+    if token =="abcde":
         return render_template("agregar_disco.html", esSesionIniciada=True)
     return render_template("login.html")
 
@@ -106,31 +106,6 @@ def actualizar_disco():
     controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
     return redirect("/discos")
 
-# @app.route("/sumafactoriales/<nro1>/<nro2>")
-# def hello(nro1, nro2):
-#     # Suma de los factoriales resultantes de ambos números
-#     return f"Suma de factoriales es: {math.factorial(int(escape(nro1))) + math.factorial(int(escape(nro2)))}!"
-
-# @app.route('/projects/')
-# def projects():
-#     return 'The project page'
-
-# @app.route('/about')
-# def about():
-#     return 'The about page'
-
-# @app.route('/login')
-# def login():
-#     return 'login'
-
-# @app.route('/user/<username>')
-# def profile(username):
-#     return f'{username}\'s profile'
-
-# with app.test_request_context():
-#     print(url_for('login'))
-#     print(url_for('login', next='/'))
-#     print(url_for('profile', username='John Doe'))
 
 @app.route("/")
 @app.route("/login")
