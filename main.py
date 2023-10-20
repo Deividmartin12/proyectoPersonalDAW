@@ -4,7 +4,7 @@ from markupsafe import escape
 import math
 import controladores.controlador_discos as controlador_discos
 import controladores.controlador_usuarios as controlador_usuarios
-import clases.clase_disco as Disco
+import clases.clase_disco as clase_disco
 from flask import url_for
 from flask import make_response
 import hashlib
@@ -26,7 +26,7 @@ def pruebajsonreal():
     #pruebadict = ""
     return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'})
     
-@app.route("/agregar_disco")
+@app.route("/agregar_|clase_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
     if token ==token:
@@ -38,6 +38,15 @@ def formulario_agregar_disco():
 #metodo por defecto es get
 #post cuando consuma esta api enviara la informacion en el cuerpo del reques
 #get-> envia en el enlace
+@app.route("/api_obtener_discos")
+def api_obtner_dicos():
+    lista_dics= []
+    discos=controlador_discos.obtener_discos
+    for disco in discos:
+        mi_obj_disco = clase_disco.Disco(disco[0],disco[1],disco[2],disco[3],disco[4],disco[5])
+        lista_dics.append(mi_obj_disco.obtener_objeto_serializable())
+    return jsonify(lista_dics)
+
 @app.route("/api_guardar_disco")
 def api_agregar_disco():
     token = request.cookies.get('token')
@@ -62,7 +71,7 @@ def api_actualizar_disco():
 
 @app.route("/api_pruebaobjeto")
 def api_prueba_objeto():
-    mi_objeto=Disco.Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
+    mi_objeto=clase_disco.Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
     return jsonify(mi_objeto.obtener_objeto_serializable())
 
 @app.route("/guardar_disco", methods=["POST"])
