@@ -4,6 +4,7 @@ from markupsafe import escape
 import math
 import controladores.controlador_discos as controlador_discos
 import controladores.controlador_usuarios as controlador_usuarios
+import clases.clase_disco as Disco
 from flask import url_for
 from flask import make_response
 import hashlib
@@ -59,6 +60,10 @@ def api_actualizar_disco():
     controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
     return jsonify({'Mensaje':'Registro actualizar', 'Codigo':'1'})
 
+@app.route("/api_pruebaobjeto")
+def api_prueba_objeto():
+    mi_objeto=Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
+    return jsonify(mi_objeto)
 
 @app.route("/guardar_disco", methods=["POST"])
 def guardar_disco():
