@@ -26,7 +26,7 @@ def pruebajsonreal():
     #pruebadict = ""
     return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'})
     
-@app.route("/agregar_|clase_disco")
+@app.route("/agregar_clase_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
     if token ==token:
@@ -40,13 +40,14 @@ def formulario_agregar_disco():
 #get-> envia en el enlace
 @app.route("/api_obtener_discos")
 def api_obtener_discos():
+    response = dict()
     lista_dics= []
     discos=controlador_discos.obtener_discos()
     for disco in discos:
         mi_obj_disco = clase_disco.Disco(disco[0],disco[1],disco[2],disco[3],disco[4],disco[5])
         lista_dics.append(mi_obj_disco.obtener_objeto_serializable())
-
-    return jsonify(lista_dics)
+    response["data"] = lista_dics
+    return jsonify(response)
 
 @app.route("/api_guardar_disco")
 def api_agregar_disco():
