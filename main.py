@@ -62,8 +62,8 @@ def api_actualizar_disco():
 
 @app.route("/api_pruebaobjeto")
 def api_prueba_objeto():
-    mi_objeto=Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
-    return jsonify(mi_objeto)
+    mi_objeto=Disco.Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
+    return jsonify(mi_objeto.obtener_objeto_serializable())
 
 @app.route("/guardar_disco", methods=["POST"])
 def guardar_disco():
