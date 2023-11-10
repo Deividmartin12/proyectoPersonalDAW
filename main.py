@@ -1,116 +1,37 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, jsonify
-from flask_jwt import JWT, jwt_required, current_identity
 from markupsafe import escape
 import math
 import controladores.controlador_discos as controlador_discos
 import controladores.controlador_usuarios as controlador_usuarios
-import clases.clase_disco as clase_disco
 from flask import url_for
 from flask import make_response
 import hashlib
 import random
-######################## SEGURIDAD - INICIO #######################################
-
-class User(object):
-    def __init__(self, id, username, password):
-        self.id = id
-        self.username = username
-        self.password = password
-
-    def __str__(self):
-        return "User(id='%s')" % self.id
-
-users = [
-    User(1, 'user1', 'abcxyz'),
-    User(2, 'user2', 'abcxyz'),
-]
-
-username_table = {u.username: u for u in users}
-userid_table = {u.id: u for u in users}
-
-def authenticate(username, password):
-    user = username_table.get(username, None)
-    if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
-        return user
-
-def identity(payload):
-    user_id = payload['identity']
-    return userid_table.get(user_id, None)
 
 app = Flask(__name__)
-app.debug = True
-app.config['SECRET_KEY'] = 'super-secret'
-
-jwt = JWT(app, authenticate, identity)
-######################## SEGURIDAD - FIN #######################################
- 
-
-
 
 @app.route("/pruebajson")
 def pruebajson():
     #pruebadict = dict()
     #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';
     pruebadict = "{'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'}"
-    return pruebadict
+    return pruebadict;
 
 @app.route("/pruebajsonreal")
 def pruebajsonreal():
     #pruebadict = dict()
     #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';    
     #pruebadict = ""
-    return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'})
+    return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'});
     
-@app.route("/agregar_clase_disco")
+@app.route("/agregar_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
-    if token ==token:
+    if token == "abcdef":
         return render_template("agregar_disco.html", esSesionIniciada=True)
     return render_template("login.html")
 
-#APIS
-
-#metodo por defecto es get
-#post cuando consuma esta api enviara la informacion en el cuerpo del reques
-#get-> envia en el enlace
-@app.route("/api_obtener_discos")
-def api_obtener_discos():
-    response = dict()
-    lista_dics= []
-    discos=controlador_discos.obtener_discos()
-    for disco in discos:
-        mi_obj_disco = clase_disco.Disco(disco[0],disco[1],disco[2],disco[3],disco[4],disco[5])
-        lista_dics.append(mi_obj_disco.obtener_objeto_serializable())
-    response["data"] = lista_dics
-    return jsonify(response)
-
-@app.route("/api_guardar_disco")
-def api_agregar_disco():
-    token = request.cookies.get('token')
-    codigo = request.json["codigo"]
-    nombre = request.json["nombre"]
-    artista = request.json["artista"]
-    precio = request.json["precio"]
-    genero = request.json["genero"]
-    controlador_discos.insertar_disco(codigo, nombre, artista, precio, genero)
-    return jsonify({'Mensaje':'Registro Correcto', 'Codigo':'1'})
-    
-@app.route("/api_actualizar_disco", methods=["POST"])
-def api_actualizar_disco():
-    id = request.json["id"]
-    codigo = request.json["codigo"]
-    nombre = request.json["nombre"]
-    artista = request.json["artista"]
-    precio = request.json["precio"]
-    genero = request.json["genero"]
-    controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
-    return jsonify({'Mensaje':'Registro actualizar', 'Codigo':'1'})
-
-@app.route("/api_pruebaobjeto")
-def api_prueba_objeto():
-    mi_objeto=clase_disco.Disco(10,"ABC987","Animals","Pink Floyd",170,"Rock progresivo")
-    return jsonify(mi_objeto.obtener_objeto_serializable())
 
 @app.route("/guardar_disco", methods=["POST"])
 def guardar_disco():
@@ -158,6 +79,31 @@ def actualizar_disco():
     controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
     return redirect("/discos")
 
+# @app.route("/sumafactoriales/<nro1>/<nro2>")
+# def hello(nro1, nro2):
+#     # Suma de los factoriales resultantes de ambos números
+#     return f"Suma de factoriales es: {math.factorial(int(escape(nro1))) + math.factorial(int(escape(nro2)))}!"
+
+# @app.route('/projects/')
+# def projects():
+#     return 'The project page'
+
+# @app.route('/about')
+# def about():
+#     return 'The about page'
+
+# @app.route('/login')
+# def login():
+#     return 'login'
+
+# @app.route('/user/<username>')
+# def profile(username):
+#     return f'{username}\'s profile'
+
+# with app.test_request_context():
+#     print(url_for('login'))
+#     print(url_for('login', next='/'))
+#     print(url_for('profile', username='John Doe'))
 
 @app.route("/")
 @app.route("/login")
