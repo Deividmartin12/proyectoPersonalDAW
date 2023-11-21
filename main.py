@@ -1,30 +1,80 @@
-import json
 from flask import Flask, render_template, request, redirect, flash, jsonify
 from markupsafe import escape
 import math
 import controladores.controlador_discos as controlador_discos
 import controladores.controlador_usuarios as controlador_usuarios
+import clases.clase_disco as clase_disco
+import clases.clase_usuario as clase_usuario
 from flask import url_for
 from flask import make_response
 import hashlib
 import random
+from flask_jwt import JWT, jwt_required, current_identity
+
+##### SEGURIDAD - INICIO ###################################
+
+def authenticate(username, password):
+    usuario = controlador_usuarios.obtener_usuario_por_username(username)
+    if usuario and (usuario[2] == password):
+        objUsuario = clase_usuario.Usuario(usuario[0], usuario[1], usuario[2])
+        return objUsuario
+
+def identity(payload):
+    user_id = payload['identity']
+    usuario = controlador_usuarios.obtener_usuario_por_id(user_id)
+    objUsuario = clase_usuario.Usuario(usuario[0], usuario[1], usuario[2])
+    return objUsuario
 
 app = Flask(__name__)
+app.debug = True
+app.config['SECRET_KEY'] = 'super-secret'
 
-@app.route("/pruebajson")
-def pruebajson():
-    #pruebadict = dict()
-    #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';
-    pruebadict = "{'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'}"
-    return pruebadict;
+jwt = JWT(app, authenticate, identity)
 
-@app.route("/pruebajsonreal")
-def pruebajsonreal():
-    #pruebadict = dict()
-    #pruebadict['S1'] = 'Hugo'; pruebadict['S2'] = 'Paco'; pruebadict['S3'] = 'Luis';    
-    #pruebadict = ""
-    return jsonify({'S1': 'Hugo', 'S2': 'Paco', 'S3': 'Luis'});
-    
+##### SEGURIDAD - FIN ######################################
+
+##### APIS #################################################
+@app.route("/api_obtener_discos")
+@jwt_required()
+def api_obtener_discos():
+    response = dict()
+    listadiccs = []
+    discos = controlador_discos.obtener_discos()
+    for disco in discos:
+        miobjdisco = clase_disco.Disco(disco[0],disco[1],disco[2],disco[3],disco[4],disco[5])
+        listadiccs.append(miobjdisco.obtenerObjetoSerializable())
+    response["data"] = listadiccs
+    response["code"] = 1
+    response["message"] = "Listado de discos correcto"
+    return jsonify(response)
+
+@app.route("/api_guardar_disco", methods=["POST"])
+def api_guardar_disco():
+    codigo = request.json["codigo"]
+    nombre = request.json["nombre"]
+    artista = request.json["artista"]
+    precio = request.json["precio"]
+    genero = request.json["genero"]
+    controlador_discos.insertar_disco(codigo, nombre, artista, precio, genero)
+    return jsonify({'Mensaje':'Registro correcto', 'Codigo':'1'})
+
+@app.route("/api_actualizar_disco", methods=["POST"])
+def api_actualizar_disco():
+    id = request.json["id"]
+    codigo = request.json["codigo"]
+    nombre = request.json["nombre"]
+    artista = request.json["artista"]
+    precio = request.json["precio"]
+    genero = request.json["genero"]
+    controlador_discos.actualizar_disco(codigo, nombre, artista, precio, genero, id)
+    return jsonify({'Mensaje':'Registro actualizado', 'Codigo':'1'})
+
+@app.route("/api_pruebaobjeto")
+def api_pruebaobjeto():
+    miobjeto = clase_disco.Disco(10, "ABC987", "Animals", "Pink Floyd", 170, "Rock progresivo")
+    return jsonify(miobjeto.obtenerObjetoSerializable())
+
+##### WEB ##################################################
 @app.route("/agregar_disco")
 def formulario_agregar_disco():
     token = request.cookies.get('token')
@@ -121,7 +171,7 @@ def procesar_login():
     username = request.form["username"]
     password = request.form["password"]
     usuario = controlador_usuarios.obtener_usuario_por_username(username)
-    
+
     # Encriptar password ingresado por usuario
     h = hashlib.new('sha256')
     h.update(bytes(password,encoding='utf-8'))
@@ -139,7 +189,7 @@ def procesar_login():
         resp.set_cookie('token', token)
         controlador_usuarios.actualizar_token(username, token)
         return resp
-        
+
     return render_template("login.html")
 
 # Iniciar el servidor
